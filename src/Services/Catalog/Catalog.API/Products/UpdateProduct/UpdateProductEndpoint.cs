@@ -1,5 +1,6 @@
 ﻿using Carter;
 using Catalog.API.Products.CreateProduct;
+using FluentValidation;
 using Mapster;
 using MediatR;
 

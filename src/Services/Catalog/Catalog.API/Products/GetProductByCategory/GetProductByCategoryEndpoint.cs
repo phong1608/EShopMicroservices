@@ -16,10 +16,7 @@ namespace Catalog.API.Products.GetProductByCategory
             {
                 var result =await sender.Send(new GetProductByCategoryQuery(CategoryName));
                 var response = result.Adapt<GetProductByCategoryResponse>();
-                if(response==null)
-                {
-                    throw new ProductNotFoundException();
-                }
+                
                 return response;
             })
             .WithName("GetProductByCategory")
