@@ -15,7 +15,7 @@ namespace Cart.API.Basket.GetBasket
         }
         public async Task<GetBasketResult> Handle(GetBasketQuery query, CancellationToken cancellationToken)
         {
-            var cart = await _repository.GetBasket(query.UserName);
+            var cart = await _repository.GetBasket(query.UserName, cancellationToken);
             return new GetBasketResult(cart);
         }
     }

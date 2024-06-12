@@ -35,7 +35,7 @@ namespace Cart.API.Data
         public async Task<ShoppingCart> StoreBasket(ShoppingCart basket, CancellationToken cancellationToken = default)
         {
             await _repository.StoreBasket(basket, cancellationToken);
-            await _cache.SetStringAsync(basket.UserName,JsonSerializer.Serialize(basket),cancellationToken);
+            await _cache.SetStringAsync(basket.UserName!,JsonSerializer.Serialize(basket),cancellationToken);
             return basket; 
         }
     }
