@@ -8,6 +8,8 @@ using Marten;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
+using BuildingBlocks.Messaging.MassTransit;
+using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +54,8 @@ builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(
     };
     return handler;
 });
+builder.Services.AddMessageBroker(builder.Configuration);
+
 var app = builder.Build();
 
 app.MapCarter();
