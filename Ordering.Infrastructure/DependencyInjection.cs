@@ -14,12 +14,12 @@ namespace Ordering.Infrastructure
        public static IServiceCollection AddInfrastructureServices(this IServiceCollection services,IConfiguration configuration)
        {
             var connectionString = configuration.GetConnectionString("Database");
-            services.AddScoped<ISaveChangesInterceptor,AuditableEntityInterceptor>();
-            services.AddScoped<ISaveChangesInterceptor,DispatchDomainEventInterceptor>();
+            services.AddSingleton<AuditableEntityInterceptor>();
 
             services.AddDbContext<ApplicationDbContext>((sp,options) =>
             {
-                options.AddInterceptors(sp.GetService<ISaveChangesInterceptor>()!);
+                var auditableInterceptor = sp.GetService<AuditableEntityInterceptor>();
+                options.AddInterceptors(auditableInterceptor!);
                 options.UseSqlServer(connectionString);
             });
             services.AddScoped<IApplicationDbContext, ApplicationDbContext>();

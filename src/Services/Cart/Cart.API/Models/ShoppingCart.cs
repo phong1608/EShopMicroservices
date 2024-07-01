@@ -1,10 +1,16 @@
-﻿namespace Cart.API.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+
+namespace Cart.API.Models
 {
     public class ShoppingCart
     {
+        [Key]
+        public Guid CartId { get; set; }
+        public Guid UserId { get; set; }
         public string? UserName { get; set; }
-        public List<ShoppingCartItem> Items { get; set; } = new();
-        public decimal? TotalPrice =>Items.Sum(x=> x.Price * x.Quantity);
+        public virtual List<ShoppingCartItem> Items { get; set; } = default!;
+        public decimal? TotalPrice =0;
         public ShoppingCart(string username)
         {
             UserName = username;

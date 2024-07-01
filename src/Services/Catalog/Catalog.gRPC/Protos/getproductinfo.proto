@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option csharp_namespace = "Catalog.gRPC.Protos";
+package Catalog;
+service GetProductService{
+	rpc GetProuductInfo(GetProductRequest) returns (ProductModel);
+}
+
+message GetProductRequest{
+	string Id=1;
+}
+message ProductModel{
+	string productName = 1;
+	double price =2;
+}

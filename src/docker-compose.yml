@@ -14,7 +14,11 @@ services:
      build:
       context: .
       dockerfile: Services/Catalog/Catalog.API/Dockerfile
-
+    catalog.grpc:
+     image: ${DOCKER_REGISTRY-}cataloggrpc
+     build:
+       context: .
+       dockerfile: Services/Catalog/Catalog.gRPC/Dockerfile
     cart.api:
      image: ${DOCKER_REGISTRY-}cartapi
      build:
@@ -30,7 +34,7 @@ services:
      image: mcr.microsoft.com/mssql/server
     messagebroker:
      image: rabbitmq:management
-
+    
 
 
     ordering.api:
@@ -45,11 +49,21 @@ services:
        context: .
        dockerfile: ApiGateways/YarpApiGateway/Dockerfile
 
+    authenticate.api:
+     image: ${DOCKER_REGISTRY-}authenticateapi
+     build:
+       context: .
+       dockerfile: Services/Authenticate/Authenticate_Service/Dockerfile
+
+  
+
 volumes:
     postgres_catalog:
     postgres_cart:
     
     
+
+
 
 
 

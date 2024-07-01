@@ -41,6 +41,9 @@ services:
       - ASPNETCORE_HTTPS_PORTS=8081
       - ASPNETCORE_URLS=https://+:8081;http://+:8080
       - ConnectionStrings__Database=Server=catalogdb;Port=5432;Database=CatalogDb;User Id=postgres;Password=postgress;Include Error Detail=true
+      - MessageBroker__Host=amqp://ecommerce-mq:5672
+      - MessageBroker__UserName=guest
+      - MessageBroker__Password=guest
     depends_on:
       - catalogdb
     ports:
@@ -56,12 +59,17 @@ services:
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
       - ASPNETCORE_URLS=https://+:8081;http://+:8080
-      - ConnectionStrings__Database=Server=cartdb;Port=5432;Database=CartDb;User Id=postgres;Password=postgres;Include Error Detail=true
+      - ConnectionStrings__Database=Server=orderdb;Database=CartDb;User Id=sa;Password=phonG1608;Encrypt=False;TrustServerCertificate=True
       - ConnectionStrings__Redis=distributedcache:6379
       - GrpcSettings__DiscountUrl= https://discount.grpc:8081
+      - GrpcSettings__CatalogUrl= https://catalog.grpc:8081
       - MessageBroker__Host=amqp://ecommerce-mq:5672
       - MessageBroker__UserName=guest
       - MessageBroker__Password=guest
+      - JwtSettings__Issuer=EShopAPI
+      - JwtSettings__Audience=EShopAPIClient
+      - JwtSettings__DurationInMinutes=10
+      - JwtSettings__Key=this is secret key for json web token
     depends_on:
       - cartdb
       - distributedcache
@@ -90,11 +98,13 @@ services:
     container_name: orderdb
     environment:
 
-      - ACCEPT_EULA=Y
+      - ACCEPT_EULA=sa
       - SA_PASSWORD=phonG1608
     restart: always
     ports:
       - "1433:1433"
+  
+
   messagebroker:
     container_name: messagebroker
     hostname: ecommerce-mq
@@ -117,6 +127,10 @@ services:
       - MessageBroker__UserName=guest
       - MessageBroker__Password=guest
       - FeatureManagement__OrderFullfilment=false
+      - JwtSettings__Issuer=EShopAPI
+      - JwtSettings__Audience=EShopAPIClient
+      - JwtSettings__DurationInMinutes=10
+      - JwtSettings__Key=this is secret key for json web token
     depends_on:
       - orderdb
       - messagebroker
@@ -137,6 +151,7 @@ services:
       - catalog.api
       - cart.api
       - ordering.api
+      - authenticate.api
     ports:
       - "6004:8080"
       - "6064:8081"
@@ -145,3 +160,37 @@ services:
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
 
     
+  authenticate.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+      - ASPNETCORE_URLS=https://+:8081;http://+:8080
+      - ConnectionStrings__Database=Server=orderdb;Database=UserDb;User Id=sa;Password=phonG1608;Encrypt=False;TrustServerCertificate=True
+      - JwtSettings__Issuer=EShopAPI
+      - JwtSettings__Audience=EShopAPIClient
+      - JwtSettings__DurationInMinutes=10
+      - JwtSettings__Key=this is secret key for json web token
+      - MessageBroker__Host=amqp://ecommerce-mq:5672
+      - MessageBroker__UserName=guest
+      - MessageBroker__Password=guest
+    ports:
+      - "6005:8080"
+      - "6065:8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  catalog.grpc:
+    environment:
+       - ASPNETCORE_ENVIRONMENT=Development
+       - ASPNETCORE_HTTP_PORTS=8080
+       - ASPNETCORE_HTTPS_PORTS=8081
+       - ASPNETCORE_URLS=https://+:8081;http://+:8080
+       - ConnectionStrings__Database=Server=catalogdb;Port=5432;Database=CatalogDb;User Id=postgres;Password=postgress;Include Error Detail=true
+    ports:
+      - "6006:8080"
+      - "6066:8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro

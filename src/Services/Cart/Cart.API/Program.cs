@@ -4,16 +4,27 @@ using Carter;
 using Discount.gRPC;
 using FluentValidation;
 using HealthChecks.UI.Client;
-using Marten;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
 using BuildingBlocks.Messaging.MassTransit;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
+using Cart.API.Basket.EventHandler.Integration;
+using BuildingBlocks.Extension;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Catalog.gRPC.Protos;
+using Cart.API.Extension;
 
 var builder = WebApplication.CreateBuilder(args);
-
 builder.Services.AddCarter();
+builder.Services.AddAuthorization();
+builder.Services.AddDbContext<CartContext>((sp,opts) =>
+{
+    opts.UseSqlServer(builder.Configuration.GetConnectionString("Database"));
+});
 builder.Services.AddMediatR(config =>
 {
     config.RegisterServicesFromAssembly(typeof(Program).Assembly);
@@ -21,12 +32,28 @@ builder.Services.AddMediatR(config =>
     config.AddOpenBehavior(typeof(LoggingBehavior<,>));
 
 });
-builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
-builder.Services.AddMarten(opts =>
+builder.Services.AddAuthentication(options =>
 {
-    opts.Connection(builder.Configuration.GetConnectionString("Database")!);
-    opts.Schema.For<ShoppingCart>().Identity(x => x.UserName!);
-}).UseLightweightSessions();
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero,
+        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+        ValidAudience = builder.Configuration["JwtSettings:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]!))
+
+    };
+});
+builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
+
 builder.Services.AddTransient<IBasketRepository, BasketRepository>();
 builder.Services.Decorate<IBasketRepository, CachedBasketRepository>();
 builder.Services.AddStackExchangeRedisCache(options =>
@@ -54,7 +81,33 @@ builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(
     };
     return handler;
 });
-builder.Services.AddMessageBroker(builder.Configuration);
+builder.Services.AddGrpcClient<GetProductService.GetProductServiceClient>(options =>
+{
+    options.Address = new Uri(builder.Configuration["GrpcSettings:CatalogUrl"]!);
+}).ConfigurePrimaryHttpMessageHandler(() =>
+{
+    var handler = new HttpClientHandler
+    {
+        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+    };
+    return handler;
+});
+builder.Services.AddMassTransit(config =>
+{
+    config.SetKebabCaseEndpointNameFormatter();
+    config.AddConsumer<UserCreatedEventHandler>();
+    
+    config.UsingRabbitMq((context, configurator) =>
+    {
+        configurator.Host(new Uri(builder.Configuration["MessageBroker:Host"]!), host =>
+        {
+            host.Username(builder.Configuration["MessageBroker:UserName"]);
+            host.Password(builder.Configuration["MessageBroker:Password"]);
+        });
+        configurator.ConfigureEndpoints(context);
+    });
+
+});
 
 var app = builder.Build();
 
@@ -83,10 +136,16 @@ app.UseExceptionHandler(exceptionHandlerApp =>
         await context.Response.WriteAsJsonAsync(problemDetails);
     });
 });
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseHealthChecks("/health",
     new HealthCheckOptions
     {
         ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
     }
     );
+if (app.Environment.IsDevelopment())
+{
+    app.InitialiseDatabaseAsync();
+}
 app.Run();

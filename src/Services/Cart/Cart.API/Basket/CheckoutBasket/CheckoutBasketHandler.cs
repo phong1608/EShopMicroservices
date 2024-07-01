@@ -4,7 +4,6 @@ using Cart.API.DTOs;
 using Cart.API.Exception;
 using FluentValidation;
 using Mapster;
-using Marten;
 using MassTransit;
 
 namespace Cart.API.Basket.CheckoutBasket
@@ -19,7 +18,6 @@ namespace Cart.API.Basket.CheckoutBasket
         public CheckoutBasketCommandValidator()
         {
             RuleFor(x => x.BasketCheckoutDto).NotNull().WithMessage("BasketCheckoutDto can't be null");
-            RuleFor(x => x.BasketCheckoutDto.UserName).NotEmpty().WithMessage("UserName is required");
         }
     }
     public class CheckoutBasketHandler : ICommandHandler<CheckoutBasketCommand, CheckoutBasketResult>
@@ -33,13 +31,16 @@ namespace Cart.API.Basket.CheckoutBasket
         }
         public async Task<CheckoutBasketResult> Handle(CheckoutBasketCommand command, CancellationToken cancellationToken)
         {
-            var basket = await _basketRepository.GetBasket(command.BasketCheckoutDto.UserName,cancellationToken);
+            var basket = await _basketRepository.GetBasket(command.BasketCheckoutDto.CustomerId,cancellationToken);
             if (basket == null)
             {
                 return new CheckoutBasketResult(false);
             }
             var eventMessage = command.BasketCheckoutDto.Adapt<BasketCheckoutEvent>();
-            eventMessage.TotalPrice = basket.TotalPrice;
+            eventMessage.UserName = basket.UserName!;
+            eventMessage.CustomerId = command.BasketCheckoutDto.CustomerId;
+            eventMessage.TotalPrice = basket.Items.Sum(item => item.Price);
+
             eventMessage.CartItems = basket.Items.Select(item => new CartItem
             {
                 ProductId = item.ProductId,
@@ -47,7 +48,7 @@ namespace Cart.API.Basket.CheckoutBasket
                 Quantity = item.Quantity
             }).ToList();
             await _publisher.Publish(eventMessage,cancellationToken);
-            await _basketRepository.DeleteBasket(basket.UserName!);
+            await _basketRepository.DeleteBasketItem(basket.UserId!);
             return new CheckoutBasketResult(true);
         }
     }

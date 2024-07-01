@@ -19,7 +19,6 @@ namespace Ordering.Domain.Models
         public Guid CustomerId { get; private set; } = default!;
         public string OrderName { get; private set; } = default!;
         public Address ShippingAddress { get; private set; } = default!;
-        public Payment Payment { get; private set; } = default!;
         public OrderStatus Status { get; private set; } = OrderStatus.Pending;
         public decimal TotalPrice
         {
@@ -27,7 +26,7 @@ namespace Ordering.Domain.Models
             private set { }
         }
 
-        public static Order Create(Guid orderId,Guid customerId,string orderName,Address shippingAddress,Payment payment,OrderStatus orderStatus=OrderStatus.Pending)
+        public static Order Create(Guid orderId,Guid customerId,string orderName,Address shippingAddress,OrderStatus orderStatus=OrderStatus.Pending)
         {
             var order = new Order()
             {
@@ -35,19 +34,17 @@ namespace Ordering.Domain.Models
                 CustomerId=customerId,
                 OrderName=orderName,
                 ShippingAddress=shippingAddress,
-                Payment=payment,
                 Status=orderStatus
             };
             order.AddDomainEvent(new OrderCreatedEvent(order));
             return order;
         }
-        public void Update(Guid orderId, Guid customerId, string orderName, Address shippingAddress, Payment payment, OrderStatus orderStatus)
+        public void Update(Guid orderId, Guid customerId, string orderName, Address shippingAddress,  OrderStatus orderStatus)
         {
             Id = orderId;
             CustomerId = customerId;
             OrderName = orderName;
             ShippingAddress = shippingAddress;
-            Payment = payment;
             Status = orderStatus;
             AddDomainEvent(new UpdateOrderEvent());
         }

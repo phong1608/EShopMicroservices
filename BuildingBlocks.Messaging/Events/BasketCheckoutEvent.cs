@@ -27,12 +27,7 @@ namespace BuildingBlocks.Messaging.Events
         public string District { get; set; } = default!;
         public string Street { get; set; } = default!;
 
-        // Payment
-        public string CardName { get; set; } = default!;
-        public string CardNumber { get; set; } = default!;
-        public string Expiration { get; set; } = default!;
-        public string CVV { get; set; } = default!;
-        public int PaymentMethod { get; set; } = default!;
+       
         //CartItem
         public List<CartItem> CartItems { get; set; } =new();
     }

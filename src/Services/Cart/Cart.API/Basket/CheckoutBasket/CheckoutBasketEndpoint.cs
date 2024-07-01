@@ -1,5 +1,7 @@
 ﻿using Cart.API.DTOs;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Cart.API.Basket.CheckoutBasket
 {
@@ -9,8 +11,10 @@ namespace Cart.API.Basket.CheckoutBasket
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPost("/basket/checkout",async(CheckoutBasketRequest request,ISender sender) =>
+            app.MapPost("/basket/checkout",[Authorize]async(CheckoutBasketRequest request,ISender sender, ClaimsPrincipal user) =>
             {
+                string userId = user.FindFirst(ClaimTypes.NameIdentifier!)!.Value;
+                request.BasketCheckoutDto.CustomerId =new Guid(userId);
                 var command = request.Adapt<CheckoutBasketCommand>();
                 var result = await sender.Send(command);
                 var response = result.Adapt<CheckoutBasketResponse>();

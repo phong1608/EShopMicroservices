@@ -1,4 +1,6 @@
 ﻿using BuildingBlocks;
+using BuildingBlocks.Messaging.Events;
+using Catalog.gRPC.Protos;
 using Ordering.Application.Orders.Queries.GetOrder;
 using Ordering.Application.OrdersExtension;
 using System;
@@ -12,9 +14,11 @@ namespace Ordering.Application.Orders.Queries.GetOrders
     public class GetOrdersHandler : IQueryHandler<GetOrdersQuery, GetOrdersResult>
     {
         private readonly IApplicationDbContext _context;
-        public GetOrdersHandler(IApplicationDbContext context)
+        private readonly GetProductService.GetProductServiceClient _productServiceClient;
+        public GetOrdersHandler(IApplicationDbContext context, GetProductService.GetProductServiceClient productServiceClient )
         {
             _context = context;
+            _productServiceClient = productServiceClient;
         }
         public async Task<GetOrdersResult> Handle(GetOrdersQuery query, CancellationToken cancellationToken)
         {
@@ -26,7 +30,13 @@ namespace Ordering.Application.Orders.Queries.GetOrders
                 .Skip(pageSize*pageIndex)
                 .Take(pageSize)
                 .ToListAsync(cancellationToken);
-            return new GetOrdersResult(new PaginatedResult<OrderDTO>(pageIndex, pageSize, totalCount, orders.ToOrderDtoList()));
+            var orderDTO = orders.ToOrderDtoList();
+            return new GetOrdersResult(new PaginatedResult<OrderDTO>(pageIndex, pageSize, totalCount, orderDTO));
+        }
+        public async Task<string> GetProductName(string productId)
+        {
+            var product =await  _productServiceClient.GetProuductInfoAsync(new GetProductRequest { Id = productId });
+            return product.ProductName;
         }
     }
 }

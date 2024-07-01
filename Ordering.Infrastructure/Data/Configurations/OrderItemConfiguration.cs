@@ -15,9 +15,7 @@ namespace Ordering.Infrastructure.Data.Configurations
         public void Configure(EntityTypeBuilder<OrderItem> builder)
         {
             builder.HasKey(x=>x.Id);
-            builder.HasOne<Product>()
-                .WithMany()
-                .HasForeignKey(k => k.ProductId);
+            
 
         }
     }

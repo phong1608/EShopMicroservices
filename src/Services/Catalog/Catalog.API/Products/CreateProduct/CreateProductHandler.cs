@@ -2,8 +2,10 @@
 using BuildingBlocks.CQRS;
 using Catalog.API.Models;
 using FluentValidation;
+using JasperFx.CodeGeneration.Frames;
 using Marten;
 using MediatR;
+using System.Security.Claims;
 
 namespace Catalog.API.Products.CreateProduct
 {
@@ -33,7 +35,7 @@ namespace Catalog.API.Products.CreateProduct
         }
         public async Task<CreateProductResult> Handle(CreateProducCommand command, CancellationToken cancellationToken)
         {
-            
+
             var product = new Product 
             {
                 Name=command.Name,

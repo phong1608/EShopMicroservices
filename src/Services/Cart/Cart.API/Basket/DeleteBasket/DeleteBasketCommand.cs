@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Cart.API.Basket.DeleteBasket
 {
-    public record DeleteBasketCommand(string UserName):ICommand<DeleteBasketResult>;
+    public record DeleteBasketCommand(Guid UserId):ICommand<DeleteBasketResult>;
     public record DeleteBasketResult(bool IsSuccess);
     public class DeleteBasketCommandValidatore:AbstractValidator<DeleteBasketCommand>
     {
@@ -18,7 +18,7 @@ namespace Cart.API.Basket.DeleteBasket
         }
         public async Task<DeleteBasketResult> Handle(DeleteBasketCommand command, CancellationToken cancellationToken)
         {
-            var isSuccess = await _repository.DeleteBasket(command.UserName);
+            var isSuccess = await _repository.DeleteBasketItem(command.UserId);
             return new DeleteBasketResult(isSuccess);
         }
     }

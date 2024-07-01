@@ -34,13 +34,11 @@ namespace Ordering.Application.Orders.Commands.UpdateOrder
         {
             var shippingAddress = Address.Of(orderDTO.ShippingAddress.FirstName, orderDTO.ShippingAddress.LastName, orderDTO.ShippingAddress.Email,
                orderDTO.ShippingAddress.Phone, orderDTO.ShippingAddress.City, orderDTO.ShippingAddress.District, orderDTO.ShippingAddress.Street);
-            var payment = Payment.Of(orderDTO.Payment.CardName, orderDTO.Payment.CardNumber, orderDTO.Payment.Expiration, orderDTO.Payment.Cvv, orderDTO.Payment.PaymentMethod);
             order.Update(
                 orderId: orderDTO.Id,
                 customerId: orderDTO.CustomerId,
                 orderName:  orderDTO.OrderName,
                 shippingAddress: shippingAddress,
-                payment: payment,
                 orderStatus: orderDTO.Status);
         }
     }

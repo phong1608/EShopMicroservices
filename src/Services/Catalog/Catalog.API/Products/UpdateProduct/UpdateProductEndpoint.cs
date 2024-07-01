@@ -3,6 +3,8 @@ using Catalog.API.Products.CreateProduct;
 using FluentValidation;
 using Mapster;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace Catalog.API.Products.UpdateProduct
 {
@@ -12,7 +14,7 @@ namespace Catalog.API.Products.UpdateProduct
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPut("/products", async (UpdateProductRequest request, ISender sender) =>
+            app.MapPut("/products", [Authorize(Roles = "Admin")] async (UpdateProductRequest request, ISender sender) =>
             {
                 var command = request.Adapt<UpdateProductCommand>();
                 var result =await sender.Send(command);

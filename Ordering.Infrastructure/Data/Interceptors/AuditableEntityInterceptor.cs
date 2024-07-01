@@ -29,13 +29,12 @@ namespace Ordering.Infrastructure.Data.Interceptors
             {
                 if (entry.State == EntityState.Added)
                 {
-                    entry.Entity.CreatedBy = "";
-                    entry.Entity.CreateAt = DateTime.UtcNow;
+                    entry.Property(x => x.CreateAt).CurrentValue = DateTime.UtcNow;  
 
                 }
                 if (entry.State == EntityState.Modified)
                 {
-                    entry.Entity.LastModifiedBy = "";
+                    entry.Property(x => x.LastModified).CurrentValue = DateTime.UtcNow;
                     entry.Entity.LastModified = DateTime.UtcNow;
 
                 }

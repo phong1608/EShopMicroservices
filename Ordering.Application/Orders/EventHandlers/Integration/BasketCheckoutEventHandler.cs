@@ -28,11 +28,10 @@ namespace Ordering.Application.Orders.EventHandlers.Intergration
             var command = MapToCreateOrderCommand(context.Message);
             await _sender.Send(command);
         }
-        private CreateOrderCommand MapToCreateOrderCommand(BasketCheckoutEvent message)
+        private static CreateOrderCommand MapToCreateOrderCommand(BasketCheckoutEvent message)
         {
             // Create full order with incoming event data
             var addressDto = new AddressDTO(message.FirstName, message.LastName, message.EmailAddress, message.PhoneNumber, message.City, message.District, message.Street);
-            var paymentDto = new PaymentDTO(message.CardName, message.CardNumber, message.Expiration, message.CVV, message.PaymentMethod);
             var orderId = Guid.NewGuid();
             
             var itemList = message.CartItems.Select(x => new OrderItemDTO(orderId, x.ProductId, x.Quantity, x.Price)).ToList();
@@ -41,7 +40,6 @@ namespace Ordering.Application.Orders.EventHandlers.Intergration
                 customerId: message.CustomerId,
                 orderName: message.UserName,
                 shippingAddress: addressDto,
-                payment: paymentDto,
                 status: Ordering.Domain.Enums.OrderStatus.Pending,
                 orderItems: itemList)
                 ;

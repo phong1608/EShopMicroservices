@@ -16,7 +16,12 @@
     <PackageReference Include="Carter" Version="7.2.0" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.49.0" />
     <PackageReference Include="Mapster" Version="7.4.0" />
-    <PackageReference Include="Marten" Version="7.19.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.20" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.20" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.20">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.20" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.2" />
     <PackageReference Include="Scrutor" Version="4.2.2" />
@@ -28,9 +33,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Protobuf Include="..\..\Catalog\Catalog.gRPC\Protos\getproductinfo.proto" GrpcServices="Client">
+      <Link>Protos\getproductinfo.proto</Link>
+    </Protobuf>
     <Protobuf Include="..\..\Discount\Discount.gRPC\Protos\discount.proto" GrpcServices="Client">
       <Link>Protos\discount.proto</Link>
     </Protobuf>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

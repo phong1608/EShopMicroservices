@@ -20,11 +20,7 @@ namespace Ordering.Infrastructure.Data.Configurations
 
             
 
-            builder.HasOne<Customer>()
-              .WithMany()
-              .HasForeignKey(o => o.CustomerId)
-              .IsRequired();
-
+            
             builder.HasMany(o => o.OrderItems)
                 .WithOne()
                 .HasForeignKey(oi => oi.OrderId);
@@ -42,19 +38,7 @@ namespace Ordering.Infrastructure.Data.Configurations
                    sa.Property(a => a.PhoneNumber).HasColumnName("Phone Number");
 
                });
-            builder.OwnsOne(o => o.Payment, sa =>
-            {
-                sa.Property(a => a.CardName).HasColumnName("CardName");
-                sa.Property(a => a.CartNumber).HasColumnName("CartNumber");
-                sa.Property(a => a.Expiration).HasColumnName("Expiration");
-                sa.Property(a => a.CVV).HasColumnName("CVV");
-                sa.Property(a => a.PaymentMethod).HasColumnName("PaymentMethod");
-
-
-
-            });
             
-
             builder.Property(o => o.Status)
                 .HasDefaultValue(OrderStatus.Draft)
                 .HasConversion(

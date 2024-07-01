@@ -3,6 +3,7 @@
 using Carter;
 using Mapster;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Catalog.API.Products.CreateProduct
 {
@@ -11,9 +12,10 @@ namespace Catalog.API.Products.CreateProduct
 
     public class CreateProductEndpoint : ICarterModule
     {
+        
         void ICarterModule.AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPost("/products", async (CreateProductRequest request, ISender sender) =>
+            app.MapPost("/products", [Authorize(Roles = "Admin")] async  (CreateProductRequest request, ISender sender) =>
             {
                 //DTO
                 var command = request.Adapt<CreateProducCommand>();
@@ -25,7 +27,8 @@ namespace Catalog.API.Products.CreateProduct
             .Produces<CreateProductResponse>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .WithSummary("CreateProduct")
-            .WithDescription("CreateProduct");
+            .WithDescription("CreateProduct")
+            ;
         }
     }
 }

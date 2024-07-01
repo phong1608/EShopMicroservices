@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
+﻿using Cart.API.DTOs;
+using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
 namespace Cart.API.Data
 {
@@ -12,31 +13,40 @@ namespace Cart.API.Data
             _cache = cache;
         }
 
-        public async Task<bool> DeleteBasket(string UserName)
+        public async Task<bool> AddItems( CartItemsDTO Items, string UserId)
         {
-            await _repository.DeleteBasket(UserName);
-            await _cache.RemoveAsync(UserName);
+            await _repository.AddItems(Items, UserId);
+            return true;
+        }
+
+        public async Task<bool> CreateUserBasket(Guid UserId, string UserName)
+        {
+            await _repository.CreateUserBasket(UserId, UserName);
+            return true;
+        }
+
+        public async Task<bool> DeleteBasketItem(Guid UserId)
+        {
+            await _repository.DeleteBasketItem(UserId);
+            await _cache.RemoveAsync(UserId.ToString());
             return true;
 
         }
 
-        public async Task<ShoppingCart> GetBasket(string UserName, CancellationToken cancellationToken = default)
+       
+
+        public async Task<ShoppingCart> GetBasket(Guid UserId, CancellationToken cancellationToken = default)
         {
-            var cachedBasket = await _cache.GetStringAsync(UserName, cancellationToken);
+            var cachedBasket = await _cache.GetStringAsync(UserId.ToString(), cancellationToken);
             if(!string.IsNullOrEmpty(cachedBasket))
             {
                return JsonSerializer.Deserialize<ShoppingCart>(cachedBasket)!;
             }
-            var basket = await _repository.GetBasket(UserName, cancellationToken);
-            await _cache.SetStringAsync(UserName,JsonSerializer.Serialize(basket),cancellationToken);
+            var basket = await _repository.GetBasket(UserId, cancellationToken);
+            await _cache.SetStringAsync(UserId.ToString(), JsonSerializer.Serialize(basket),cancellationToken);
             return basket;
         }
 
-        public async Task<ShoppingCart> StoreBasket(ShoppingCart basket, CancellationToken cancellationToken = default)
-        {
-            await _repository.StoreBasket(basket, cancellationToken);
-            await _cache.SetStringAsync(basket.UserName!,JsonSerializer.Serialize(basket),cancellationToken);
-            return basket; 
-        }
+        
     }
 }

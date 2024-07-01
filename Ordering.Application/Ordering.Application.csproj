@@ -13,7 +13,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.21.5" />
+    <PackageReference Include="Grpc.Net.ClientFactory" Version="2.49.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.49.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.20" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="..\src\Services\Catalog\Catalog.gRPC\Protos\getproductinfo.proto" GrpcServices="Client">
+      <Link>Protos\getproductinfo.proto</Link>
+    </Protobuf>
   </ItemGroup>
 
 </Project>

@@ -3,6 +3,7 @@ using Catalog.API.Models;
 using Catalog.API.Products.CreateProduct;
 using Mapster;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using System.Collections;
 
 namespace Catalog.API.Products.GetProduct
@@ -25,7 +26,9 @@ namespace Catalog.API.Products.GetProduct
             .Produces<CreateProductResponse>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .WithSummary("Get Products")
-            .WithDescription("Get Products");
+            .WithDescription("Get Products")
+            
+            ;
         }
     }
 }

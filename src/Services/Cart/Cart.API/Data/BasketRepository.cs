@@ -1,43 +1,72 @@
-﻿using Cart.API.Exception;
-using Marten;
+﻿using Cart.API.DTOs;
+using Cart.API.Exception;
+using Microsoft.EntityFrameworkCore;
 
 namespace Cart.API.Data
 {
     public class BasketRepository : IBasketRepository
     {
-        private readonly IDocumentSession _session;
-        public BasketRepository(IDocumentSession session)
+        private readonly CartContext _context;  
+        public BasketRepository( CartContext context)
         {
-            _session = session;
+            _context = context;
         }
-        public async Task<ShoppingCart> GetBasket(string UserName, CancellationToken cancellationToken = default)
+        public async Task<ShoppingCart> GetBasket(Guid UserId, CancellationToken cancellationToken = default)
         {
-            var basket = await _session.LoadAsync<ShoppingCart>(UserName,cancellationToken);
+            var basket = await _context.ShoppingCarts.Include(x=>x.Items).FirstOrDefaultAsync(x => x.UserId == UserId);
 
             if (basket == null)
             {
-                throw new BasketNotFoundException(UserName);
+                throw new BasketNotFoundException(UserId.ToString());
 
             }
             return basket;
 
 
         }
-        public async Task<ShoppingCart> StoreBasket(ShoppingCart basket, CancellationToken cancellationToken = default)
-        {
-            _session.Store(basket);
-            await _session.SaveChangesAsync(cancellationToken);
-            return basket;
-        }
         
-        public async Task<bool> DeleteBasket(string UserName)
+        
+        public async Task<bool> DeleteBasketItem(Guid UserId)
         {
-            _session.Delete<ShoppingCart>(UserName);
-            await _session.SaveChangesAsync();
-            return true;    
+            var userCart = await _context.ShoppingCarts
+                                .Include(x=>x.Items)
+                                .FirstOrDefaultAsync(x => x.UserId == UserId);
+
+            if (userCart == null)
+            {
+                throw new BasketNotFoundException(UserId.ToString());
+            }
+
+            if (userCart.Items.Any())
+            {
+                _context.Items.RemoveRange(userCart.Items);
+            }
+
+
+            await _context.SaveChangesAsync();
+
+            return true;
         }
 
-        
+        public async Task<bool> CreateUserBasket(Guid UserId, string UserName)
+        {
+            var cart = new ShoppingCart() {UserId=UserId,UserName=UserName };
+            await _context.ShoppingCarts.AddAsync(cart);
+            await _context.SaveChangesAsync();
+            return true;
+        }
 
+        public async Task<bool> AddItems(CartItemsDTO Items,string UserId)
+        {
+            var cart =await _context.ShoppingCarts.FirstOrDefaultAsync(x=>x.UserId==new Guid(UserId));
+            if (cart == null)
+            {
+                throw new BasketNotFoundException(UserId);
+            }
+            var newItems = new ShoppingCartItem { CartId = cart.CartId, Price = Items.Price, Quantity = Items.Quantity,ProductId=Items.ProductId };
+            await _context.Items.AddAsync(newItems);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

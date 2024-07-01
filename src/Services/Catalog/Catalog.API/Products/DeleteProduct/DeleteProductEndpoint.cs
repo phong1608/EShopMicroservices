@@ -2,6 +2,8 @@
 using Catalog.API.Products.CreateProduct;
 using Mapster;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace Catalog.API.Products.DeleteProduct
 {
@@ -11,7 +13,7 @@ namespace Catalog.API.Products.DeleteProduct
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapDelete("/products/{Id}",async(ISender sender,Guid Id) =>
+            app.MapDelete("/products/{Id}", [Authorize(Roles = "Admin")] async (ISender sender,Guid Id) =>
             {
                 var result = await sender.Send(new DeleteProductCommand(Id));
                 var response = result.Adapt<DeleteProductResponse>();

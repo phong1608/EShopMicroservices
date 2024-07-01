@@ -8,12 +8,14 @@ namespace Ordering.Application.DTOs
         public Guid ProductId { get; set; } = default!;
         public int Quantity { get; set; } = default!;
         public decimal Price { get; set; } = default!;
-        public OrderItemDTO(Guid OrderId, Guid ProductId, int Quantity, decimal Price)
+        public string ProductName { get; set; } = default!;
+        public OrderItemDTO(Guid OrderId, Guid ProductId, int Quantity, decimal Price,string ProductName="")
         {
             this.OrderId = OrderId;
             this.ProductId = ProductId;
             this.Quantity = Quantity;
             this.Price = Price;
+            this.ProductName = ProductName;
         }
         public OrderItemDTO() { }
     }
