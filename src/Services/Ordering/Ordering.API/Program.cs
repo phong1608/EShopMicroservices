@@ -22,17 +22,7 @@ builder.Services.AddMassTransit(config =>
         configurator.ConfigureEndpoints(context);
     });
 });
-builder.Services.AddGrpcClient<GetProductService.GetProductServiceClient>(options =>
-{
-    options.Address = new Uri(builder.Configuration["GrpcSettings:CatalogUrl"]!);
-}).ConfigurePrimaryHttpMessageHandler(() =>
-{
-    var handler = new HttpClientHandler
-    {
-        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-    };
-    return handler;
-});
+
 builder.Services.AddApplicationServices(builder.Configuration)
                 .AddInfrastructureServices(builder.Configuration)
                 .AddApiServices(builder.Configuration);

@@ -1,10 +1,4 @@
-﻿using Catalog.gRPC.Protos;
-using Ordering.Application.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 
 namespace Ordering.Application.OrdersExtension
 {
@@ -34,20 +28,6 @@ namespace Ordering.Application.OrdersExtension
             );
         }
     }
-    public class OrderItemExtension
-    {
-        private readonly GetProductService.GetProductServiceClient _client;
-        public OrderItemExtension(GetProductService.GetProductServiceClient client)
-        {
-            _client = client;
-        }
-
-        public async Task<string>  GetProductName(string ProductId)
-        {
-            var product = await _client.GetProuductInfoAsync(new GetProductRequest { Id = ProductId });
-
-            return product.ProductName;
-        }
-    }
+   
 
 }

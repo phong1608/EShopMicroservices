@@ -14,11 +14,9 @@ namespace Ordering.Application.Orders.Queries.GetOrders
     public class GetOrdersHandler : IQueryHandler<GetOrdersQuery, GetOrdersResult>
     {
         private readonly IApplicationDbContext _context;
-        private readonly GetProductService.GetProductServiceClient _productServiceClient;
-        public GetOrdersHandler(IApplicationDbContext context, GetProductService.GetProductServiceClient productServiceClient )
+        public GetOrdersHandler(IApplicationDbContext context )
         {
             _context = context;
-            _productServiceClient = productServiceClient;
         }
         public async Task<GetOrdersResult> Handle(GetOrdersQuery query, CancellationToken cancellationToken)
         {
@@ -33,10 +31,6 @@ namespace Ordering.Application.Orders.Queries.GetOrders
             var orderDTO = orders.ToOrderDtoList();
             return new GetOrdersResult(new PaginatedResult<OrderDTO>(pageIndex, pageSize, totalCount, orderDTO));
         }
-        public async Task<string> GetProductName(string productId)
-        {
-            var product =await  _productServiceClient.GetProuductInfoAsync(new GetProductRequest { Id = productId });
-            return product.ProductName;
-        }
+        
     }
 }

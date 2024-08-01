@@ -16,3 +16,4 @@ namespace Ordering.Domain.Abstractions
         IDomainEvent[] ClearDomainEvents();
     }
 }
+        
