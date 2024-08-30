@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Marten.Internal.DirtyTracking;
+using MassTransit.Mediator;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Ordering.Domain.Abstractions;
 using System;
@@ -11,6 +13,8 @@ namespace Ordering.Infrastructure.Data.Interceptors
 {
     public class AuditableEntityInterceptor: SaveChangesInterceptor
     {
+       
+
         public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
         {
             UpdateEntities(eventData.Context);
@@ -39,6 +43,7 @@ namespace Ordering.Infrastructure.Data.Interceptors
 
                 }
             }
+            
         }
     }
 }

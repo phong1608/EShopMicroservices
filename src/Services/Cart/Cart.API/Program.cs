@@ -1,13 +1,11 @@
 using BuildingBlocks.Behaviors;
 using Cart.API.Data;
-using Carter;
 using Discount.gRPC;
 using FluentValidation;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
-using BuildingBlocks.Messaging.MassTransit;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Cart.API.Basket.EventHandler.Integration;

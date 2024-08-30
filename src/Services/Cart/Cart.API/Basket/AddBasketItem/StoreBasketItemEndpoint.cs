@@ -1,4 +1,5 @@
-﻿using Cart.API.DTOs;
+﻿using Cart.API.Abstractions;
+using Cart.API.DTOs;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
@@ -12,15 +13,15 @@ public class StoreBasketEndpoints : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/basket",[Authorize] async (StoreBasketRequest request, ISender sender, ClaimsPrincipal user) =>
+        app.MapPost("/basket",[Authorize] async (StoreBasketRequest request, IMediator mediatr, ClaimsPrincipal user) =>
         {
 
             string userId = user.FindFirst(ClaimTypes.NameIdentifier!)!.Value;
             
             var command = new StoreBasketCommand(request.Item, userId) ;
 
-            var result = await sender.Send(command);
-
+            var result = await mediatr.Send(command);
+            await mediatr.Publish(new AddNewItemEvent(userId));
             var response = result.Adapt<StoreBasketResponse>();
 
             return response;

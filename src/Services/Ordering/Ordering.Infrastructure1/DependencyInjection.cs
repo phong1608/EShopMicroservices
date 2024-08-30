@@ -15,11 +15,15 @@ namespace Ordering.Infrastructure
        {
             var connectionString = configuration.GetConnectionString("Database");
             services.AddSingleton<AuditableEntityInterceptor>();
-
+            services.AddSingleton<DispatchDomainEventsInterceptor>();
             services.AddDbContext<ApplicationDbContext>((sp,options) =>
             {
                 var auditableInterceptor = sp.GetService<AuditableEntityInterceptor>();
+                var dispatchDomainEventInterceptor = sp.GetService<DispatchDomainEventsInterceptor>();
+
+
                 options.AddInterceptors(auditableInterceptor!);
+                options.AddInterceptors(dispatchDomainEventInterceptor!);
                 options.UseSqlServer(connectionString);
             });
             services.AddScoped<IApplicationDbContext, ApplicationDbContext>();

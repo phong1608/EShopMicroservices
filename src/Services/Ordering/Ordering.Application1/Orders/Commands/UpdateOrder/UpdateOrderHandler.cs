@@ -12,10 +12,11 @@ namespace Ordering.Application.Orders.Commands.UpdateOrder
     public class UpdateOrderHandler : ICommandHandler<UpdateOrderCommand, UpdateOrderResult>
     {
         private readonly IApplicationDbContext _context;
-        public UpdateOrderHandler(IApplicationDbContext context)
+        private readonly IPublisher _publisher;
+        public UpdateOrderHandler(IApplicationDbContext context, IPublisher publisher)
         {
             _context = context;
-
+            _publisher = publisher;
         }
 
         public async Task<UpdateOrderResult> Handle(UpdateOrderCommand command, CancellationToken cancellationToken)

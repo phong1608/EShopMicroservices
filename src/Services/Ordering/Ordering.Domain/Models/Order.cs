@@ -20,6 +20,7 @@ namespace Ordering.Domain.Models
         public string OrderName { get; private set; } = default!;
         public Address ShippingAddress { get; private set; } = default!;
         public OrderStatus Status { get; private set; } = OrderStatus.Pending;
+
         public decimal TotalPrice
         {
             get => OrderItems.Sum(x => x.Price * x.Quantity);
@@ -46,7 +47,7 @@ namespace Ordering.Domain.Models
             OrderName = orderName;
             ShippingAddress = shippingAddress;
             Status = orderStatus;
-            AddDomainEvent(new UpdateOrderEvent());
+            AddDomainEvent(new UpdateOrderEvent(Id,CustomerId,Status));
         }
         public void Add(Guid productId,int quantity,decimal price)
         {
