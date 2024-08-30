@@ -1,6 +1,5 @@
 ﻿
 
-using Catalog.gRPC.Protos;
 using Ordering.Domain.Enums;
 
 namespace Ordering.Application.DTOs

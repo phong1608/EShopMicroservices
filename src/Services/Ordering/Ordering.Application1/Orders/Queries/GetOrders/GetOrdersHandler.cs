@@ -1,6 +1,5 @@
 ﻿using BuildingBlocks;
 using BuildingBlocks.Messaging.Events;
-using Catalog.gRPC.Protos;
 using Ordering.Application.Orders.Queries.GetOrder;
 using Ordering.Application.OrdersExtension;
 using System;
