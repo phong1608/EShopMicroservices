@@ -1,4 +1,3 @@
-using Catalog.gRPC.Protos;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +23,7 @@ builder.Services.AddMassTransit(config =>
         configurator.ConfigureEndpoints(context);
     });
 });
+
 
 builder.Services.AddApplicationServices(builder.Configuration)
                 .AddInfrastructureServices(builder.Configuration)
