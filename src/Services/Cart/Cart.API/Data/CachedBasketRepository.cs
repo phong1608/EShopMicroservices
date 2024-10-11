@@ -47,6 +47,13 @@ namespace Cart.API.Data
             return basket;
         }
 
+        public async Task<bool> RemoveAllItem(Guid UserId)
+        {
+            await _repository.RemoveAllItem(UserId);
+            await _cache.RemoveAsync(UserId.ToString());
+            return true;
+        }
+
         public async Task<bool> RemoveBasketItem(Guid UserId, Guid ProductId)
         {
             await _repository.RemoveBasketItem(UserId, ProductId);

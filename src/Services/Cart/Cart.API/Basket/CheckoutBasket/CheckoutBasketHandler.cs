@@ -48,7 +48,7 @@ namespace Cart.API.Basket.CheckoutBasket
                 Quantity = item.Quantity
             }).ToList();
             await _publisher.Publish(eventMessage,cancellationToken);
-            await _basketRepository.DeleteBasketItem(basket.UserId!);
+            await _basketRepository.RemoveAllItem(basket.UserId!);
             return new CheckoutBasketResult(true);
         }
     }

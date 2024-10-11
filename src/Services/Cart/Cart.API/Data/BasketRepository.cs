@@ -123,5 +123,20 @@ namespace Cart.API.Data
 
             return true;
         }
+
+        public async Task<bool> RemoveAllItem(Guid UserId)
+        {
+            var userCart = await _context.ShoppingCarts.Include(x=>x.Items).FirstOrDefaultAsync(x=>x.UserId == UserId);
+            if(userCart == null)
+            {
+                throw new BasketNotFoundException(UserId.ToString());
+            }
+            _context.Items.RemoveRange(userCart.Items);
+            await _context.SaveChangesAsync();
+            return true;
+
+
+
+        }
     }
 }
