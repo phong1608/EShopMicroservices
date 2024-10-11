@@ -57,8 +57,8 @@ services:
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__Database=Server=orderdb;Database=CartDb;User Id=sa;Password=phonG1608;Encrypt=False;TrustServerCertificate=True
       - ConnectionStrings__Redis=distributedcache:6379
-      - GrpcSettings__DiscountUrl= https://discount.grpc:8080
-      - GrpcSettings__CatalogUrl= https://catalog.grpc:8080
+      - GrpcSettings__DiscountUrl= http://discount.grpc:8080
+      - GrpcSettings__CatalogUrl= http://catalog.grpc:8080
       - MessageBroker__Host=amqp://ecommerce-mq:5672
       - MessageBroker__UserName=guest
       - MessageBroker__Password=guest
@@ -72,7 +72,6 @@ services:
       - discount.grpc
     ports:
       - "6001:8080"
-      - "6061:8081"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -173,7 +172,7 @@ services:
     environment:
        - ASPNETCORE_ENVIRONMENT=Development
        - ASPNETCORE_HTTP_PORTS=8080
-        - ASPNETCORE_URLS=https://+:8081;http://+:8080
+        - ASPNETCORE_URLS=http://+:8080
        - ConnectionStrings__Database=Server=catalogdb;Port=5432;Database=CatalogDb;User Id=postgres;Password=postgress;Include Error Detail=true
     ports:
       - "6006:8080"

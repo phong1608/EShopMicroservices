@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cart.API.Migrations
 {
     [DbContext(typeof(CartContext))]
-    [Migration("20240628074303_Initital")]
-    partial class Initital
+    [Migration("20240902014459_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -58,6 +58,10 @@ namespace Cart.API.Migrations
 
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");

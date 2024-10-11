@@ -49,7 +49,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildingBlocks.Messaging", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notification", "Notification", "{4367CFB7-BCE3-4076-A560-AEA21BE9FF00}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notification.API", "Services\Notification\Notification.API\Notification.API.csproj", "{F5347C76-B17E-4CB2-A102-5A665CC59CF4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notification.API", "Services\Notification\Notification.API\Notification.API.csproj", "{F5347C76-B17E-4CB2-A102-5A665CC59CF4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

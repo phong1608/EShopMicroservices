@@ -13,7 +13,7 @@ namespace Cart.API.Data
         }
         public async Task<ShoppingCart> GetBasket(Guid UserId, CancellationToken cancellationToken = default)
         {
-            var basket = await _context.ShoppingCarts.Include(x=>x.Items).FirstOrDefaultAsync(x => x.UserId == UserId);
+            var basket = await _context.ShoppingCarts.Include(x=>x.Items).FirstOrDefaultAsync(x => x.UserId == UserId, cancellationToken);
 
             if (basket == null)
             {
@@ -26,17 +26,11 @@ namespace Cart.API.Data
         }
         
         
-        public async Task<bool> DeleteBasketItem(Guid UserId)
+        public async Task<bool> DeleteAllBasketItem(Guid UserId)
         {
             var userCart = await _context.ShoppingCarts
                                 .Include(x=>x.Items)
-                                .FirstOrDefaultAsync(x => x.UserId == UserId);
-
-            if (userCart == null)
-            {
-                throw new BasketNotFoundException(UserId.ToString());
-            }
-
+                                .FirstOrDefaultAsync(x => x.UserId == UserId) ?? throw new BasketNotFoundException(UserId.ToString());
             if (userCart.Items.Any())
             {
                 _context.Items.RemoveRange(userCart.Items);
@@ -56,16 +50,77 @@ namespace Cart.API.Data
             return true;
         }
 
-        public async Task<bool> AddItems(CartItemsDTO Items,string UserId)
+        public async Task<bool> AddItems(CartItemsDTO items, string userId)
         {
-            var cart =await _context.ShoppingCarts.FirstOrDefaultAsync(x=>x.UserId==new Guid(UserId));
+            var cart = await _context.ShoppingCarts
+                .Include(x => x.Items)
+                .FirstOrDefaultAsync(x => x.UserId == new Guid(userId));
+
             if (cart == null)
             {
-                throw new BasketNotFoundException(UserId);
+                throw new BasketNotFoundException(userId);
             }
-            var newItems = new ShoppingCartItem { CartId = cart.CartId, Price = Items.Price, Quantity = Items.Quantity,ProductId=Items.ProductId };
-            await _context.Items.AddAsync(newItems);
+
+            var cartItem = cart.Items.FirstOrDefault(x => x.ProductId == items.ProductId);
+
+            if (cartItem != null)
+            {
+                cartItem.Quantity += items.Quantity;
+            }
+            else
+            {
+                cart.Items.Add(new ShoppingCartItem
+                {
+                    CartId = cart.CartId,
+                    Price = items.Price,
+                    Quantity = items.Quantity,
+                    ProductId = items.ProductId,
+                    ProductName = items.ProductName
+                });
+            }
+
             await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> RemoveBasketItem(Guid UserId, Guid ProductId)
+        {
+            var userCart = await _context.ShoppingCarts
+                                .Include(x => x.Items)
+                                .FirstOrDefaultAsync(x => x.UserId == UserId);
+            if (userCart == null)
+            {
+                throw new BasketNotFoundException(UserId.ToString());
+            }
+            var item =userCart.Items.FirstOrDefault(x=>x.ProductId==ProductId);   
+            if (item != null)
+            {
+                 userCart.Items.Remove(item);
+                 await _context.SaveChangesAsync();
+            }
+            return true;
+        }
+
+        public async Task<bool> UpdateItemQuantity(Guid UserId, Guid ProductId, int Quantity)
+        {
+
+            var userCart = await _context.ShoppingCarts
+                                .Include(x => x.Items)
+                                .FirstOrDefaultAsync(x => x.UserId == UserId);
+            if (userCart == null)
+            {
+                throw new BasketNotFoundException(UserId.ToString());
+            }
+            var item = userCart.Items.FirstOrDefault(x => x.ProductId == ProductId);
+            if(item == null)
+            {
+                throw new BasketItemNotFoundException(ProductId.ToString());
+
+            }
+            item.Quantity = Quantity;
+            await _context.SaveChangesAsync();
+
+
             return true;
         }
     }

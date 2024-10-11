@@ -14,20 +14,20 @@ namespace Ordering.Infrastructure
        public static IServiceCollection AddInfrastructureServices(this IServiceCollection services,IConfiguration configuration)
        {
             var connectionString = configuration.GetConnectionString("Database");
-            services.AddSingleton<AuditableEntityInterceptor>();
-            services.AddSingleton<DispatchDomainEventsInterceptor>();
-            services.AddDbContext<ApplicationDbContext>((sp,options) =>
-            {
-                var auditableInterceptor = sp.GetService<AuditableEntityInterceptor>();
-                var dispatchDomainEventInterceptor = sp.GetService<DispatchDomainEventsInterceptor>();
 
+        // Add services to the container.
+        services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
+        services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
 
-                options.AddInterceptors(auditableInterceptor!);
-                options.AddInterceptors(dispatchDomainEventInterceptor!);
-                options.UseSqlServer(connectionString);
-            });
-            services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
-            return services;
+        services.AddDbContext<ApplicationDbContext>((sp, options) =>
+        {
+            options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
+            options.UseSqlServer(connectionString);
+        });
+
+        services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
+
+        return services;
        }
        
     }

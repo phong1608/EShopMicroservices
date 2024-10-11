@@ -1,6 +1,8 @@
 ﻿using Authenticate.API.Data.DTOs;
+using Authenticate.API.Exceptions;
 using Authenticate.API.Models;
 using Authenticate_Service.Models;
+using FluentEmail.Core;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,19 +10,20 @@ namespace Authenticate.API.IService
 {
     public class AuthService : IAuthService
     {
-       
+            private readonly IFluentEmail _fulentEmail;
             private readonly UserContext _db;
             private readonly UserManager<ApplicationUser> _userManager;
             private readonly RoleManager<ApplicationRole> _roleManager;
             private readonly IJwtTokenGenerator _jwtTokenGenerator;
 
             public AuthService(UserContext db, IJwtTokenGenerator jwtTokenGenerator,
-                UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
+                UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager,IFluentEmail fluentEmail)
             {
                 _db = db;
                 _jwtTokenGenerator = jwtTokenGenerator;
                 _userManager = userManager;
                 _roleManager = roleManager;
+                _fulentEmail = fluentEmail;
             }
 
         public async Task<bool> AssignRole(string email, string roleName)
@@ -79,7 +82,12 @@ namespace Authenticate.API.IService
                     NormalizedEmail = RegisterDTO.Email!.ToUpper(),
                     Name = RegisterDTO.Name,
                 };
+                if(_db.User.Any(u=>u.Email==RegisterDTO.Email))
+                {
+                    throw new EmailRegistedException();
+                }
                 var result = await _userManager.CreateAsync(user, RegisterDTO.Password!);
+                
                 if (result.Succeeded)
                 {
                     var newUser = _db.Users.First(u => u.Email == RegisterDTO.Email);
@@ -90,10 +98,12 @@ namespace Authenticate.API.IService
                     return newUser.Id;
 
                 }
+                
                 else
                 {
-                throw new Exception();
+                    throw new Exception();
                 }
+                
                 
                
             }

@@ -25,9 +25,9 @@ namespace Cart.API.Data
             return true;
         }
 
-        public async Task<bool> DeleteBasketItem(Guid UserId)
+        public async Task<bool> DeleteAllBasketItem(Guid UserId)
         {
-            await _repository.DeleteBasketItem(UserId);
+            await _repository.DeleteAllBasketItem(UserId);
             await _cache.RemoveAsync(UserId.ToString());
             return true;
 
@@ -47,6 +47,18 @@ namespace Cart.API.Data
             return basket;
         }
 
-        
+        public async Task<bool> RemoveBasketItem(Guid UserId, Guid ProductId)
+        {
+            await _repository.RemoveBasketItem(UserId, ProductId);
+            await _cache.RemoveAsync(UserId.ToString());
+            return true;
+        }
+
+        public async Task<bool> UpdateItemQuantity(Guid UserId, Guid ProductId, int Quantity)
+        {
+            await _repository.UpdateItemQuantity(UserId, ProductId, Quantity);
+            await _cache.RemoveAsync(UserId.ToString());
+            return true;
+        }
     }
 }

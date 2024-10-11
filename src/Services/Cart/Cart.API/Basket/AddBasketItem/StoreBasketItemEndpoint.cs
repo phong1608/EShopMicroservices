@@ -7,13 +7,13 @@ using System.Security.Claims;
 namespace Basket.API.Basket.StoreBasket;
 
 public record StoreBasketRequest(CartItemsDTO Item,string UserId);
-public record StoreBasketResponse(bool ISuccess);
+public record StoreBasketResponse(bool IsSuccess);
 
 public class StoreBasketEndpoints : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/basket",[Authorize] async (StoreBasketRequest request, IMediator mediatr, ClaimsPrincipal user) =>
+        app.MapPost("/cart/item",[Authorize] async (StoreBasketRequest request, IMediator mediatr, ClaimsPrincipal user) =>
         {
 
             string userId = user.FindFirst(ClaimTypes.NameIdentifier!)!.Value;
@@ -21,7 +21,6 @@ public class StoreBasketEndpoints : ICarterModule
             var command = new StoreBasketCommand(request.Item, userId) ;
 
             var result = await mediatr.Send(command);
-            await mediatr.Publish(new AddNewItemEvent(userId));
             var response = result.Adapt<StoreBasketResponse>();
 
             return response;

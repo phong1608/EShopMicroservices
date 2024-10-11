@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Cart.API.Migrations
 {
     /// <inheritdoc />
-    public partial class Initital : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,6 +33,7 @@ namespace Cart.API.Migrations
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CartId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>

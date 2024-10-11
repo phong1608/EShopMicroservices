@@ -25,6 +25,7 @@ namespace Catalog.API.Data
                 Name = "IPhone X", Description = "The iPhone is a smartphone made by Apple that combines a computer, iPod, digital camera and cellular phone into one device with a touchscreen interface",
                 Price = 950,
                 ImageFile="IphoneX.png",
+                Stock=100,
                 Category = new List<string> { "Smart Phone", "New Arrival" }
             },
             new Product()
@@ -34,6 +35,7 @@ namespace Catalog.API.Data
                 Description = "The Samsung Galaxy S21 is the latest flagship smartphone from Samsung, featuring a powerful camera system and fast performance.",
                 Price = 1099,
                 ImageFile="Samsung Galaxy S21.png",
+                Stock=100,
                 Category = new List<string> { "Smart Phone", "Flagship" }
             },
             new Product()
@@ -43,6 +45,7 @@ namespace Catalog.API.Data
                 Description = "The MacBook Air is a thin, lightweight laptop computer designed and manufactured by Apple Inc.",
                 Price = 999,
                 ImageFile="MacBook Air.png",
+                Stock=100,
                 Category = new List<string> { "Laptop", "Ultrabook" }
             },
             new Product() { 
@@ -51,6 +54,7 @@ namespace Catalog.API.Data
                 Description = "The PlayStation 5 is a home video game console developed by Sony Interactive Entertainment.",
                 Price = 500,
                 ImageFile="Sony PlayStation 5.png",
+                Stock=100,
                 Category = new List<string> { "Gaming Console", "Next Gen" }
             },
             new Product()
@@ -60,6 +64,7 @@ namespace Catalog.API.Data
                 Description = "The Amazon Echo Dot is a smart speaker with Alexa, perfect for any room.",
                 Price = 50,
                 ImageFile="Amazon Echo Dot.png",
+                Stock=100,
                 Category = new List<string> { "Smart Speaker", "Home Automation" }
             },
             new Product()
@@ -69,6 +74,7 @@ namespace Catalog.API.Data
                 Description = "The DJI Mavic Air 2 is a foldable drone that offers 4K video at 60fps and 48MP photos.",
                 Price = 8000,
                 ImageFile="DJI Mavic Air.png",
+                Stock=100,
                 Category = new List<string> { "Drone", "Aerial Photography"}
             }
         };

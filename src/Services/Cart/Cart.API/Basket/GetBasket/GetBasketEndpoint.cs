@@ -1,5 +1,7 @@
 ﻿using Cart.API.DTOs;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 namespace Cart.API.Basket.GetBasket
 {
     public record GetBasketResponse(CartResponseDTO CartDTO);
@@ -7,9 +9,10 @@ namespace Cart.API.Basket.GetBasket
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {  
-            app.MapGet("/basket/{userId}", async (Guid userId, ISender sender) =>
+            app.MapGet("/cart",[Authorize] async (ISender sender, ClaimsPrincipal user) =>
             {
-                var result = await sender.Send(new GetBasketQuery(userId));
+                string userId = user.FindFirst(ClaimTypes.NameIdentifier!)!.Value;
+                var result = await sender.Send(new GetBasketQuery(new Guid(userId)));
                 var repsonse = result.Adapt<GetBasketResponse>();
                 return Results.Ok(result);
             })

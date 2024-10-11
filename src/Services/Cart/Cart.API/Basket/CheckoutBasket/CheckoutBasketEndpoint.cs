@@ -11,7 +11,7 @@ namespace Cart.API.Basket.CheckoutBasket
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPost("/basket/checkout",[Authorize]async(CheckoutBasketRequest request,ISender sender, ClaimsPrincipal user) =>
+            app.MapPost("/cart/checkout",[Authorize]async(CheckoutBasketRequest request,ISender sender, ClaimsPrincipal user) =>
             {
                 string userId = user.FindFirst(ClaimTypes.NameIdentifier!)!.Value;
                 request.BasketCheckoutDto.CustomerId =new Guid(userId);

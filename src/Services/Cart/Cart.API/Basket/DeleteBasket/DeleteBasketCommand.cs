@@ -18,7 +18,7 @@ namespace Cart.API.Basket.DeleteBasket
         }
         public async Task<DeleteBasketResult> Handle(DeleteBasketCommand command, CancellationToken cancellationToken)
         {
-            var isSuccess = await _repository.DeleteBasketItem(command.UserId);
+            var isSuccess = await _repository.DeleteAllBasketItem(command.UserId);
             return new DeleteBasketResult(isSuccess);
         }
     }
