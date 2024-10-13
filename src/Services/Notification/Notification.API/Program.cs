@@ -5,6 +5,7 @@ using Marten;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Notification.API.Notification.Events;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +14,7 @@ builder.Services.AddCarter();
 
 builder.Services.AddMassTransit(config =>
 {
-        
+    config.AddConsumer<OrderCreatedEventHandler>();
 
     config.UsingRabbitMq((context, configurator) =>
     {
