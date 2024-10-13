@@ -6,7 +6,7 @@ using System.Windows.Input;
 
 namespace Notification.API.Notification.Command.CreateNotification
 {
-    public record CreateNotificationCommand(string Title, string Content, Guid RecipientId) :ICommand<CreateNotificationResult>;
+    public record CreateNotificationCommand(string Type, string Content, Guid RecipientId) :ICommand<CreateNotificationResult>;
     public record CreateNotificationResult(Guid Id);
     public class CreateNotificationCommandHandler : ICommandHandler<CreateNotificationCommand, CreateNotificationResult>
     {
@@ -18,7 +18,7 @@ namespace Notification.API.Notification.Command.CreateNotification
 
         public async Task<CreateNotificationResult> Handle(CreateNotificationCommand request, CancellationToken cancellationToken)
         {
-            var newNotification = new Notifications(request.Title, request.Content, request.RecipientId);
+            var newNotification = new Notifications(request.Type, request.Content, request.RecipientId);
             _session.Store(newNotification);
             await _session.SaveChangesAsync(cancellationToken);
             return new CreateNotificationResult(newNotification.Id);

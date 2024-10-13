@@ -8,21 +8,17 @@ using Notification.API.Notification.Command.CreateNotification;
 
 namespace Notification.API.Notification.Events
 {
-    public class EventNotificationHandler : IConsumer<NotificationEvent>
+    public class OrderCreatedEventHandler : IConsumer<OrderEvent>
     {
-        private readonly IDocumentSession _session;
         private readonly ISender _sender;
-        public EventNotificationHandler(IDocumentSession session,ISender sender)
+        public OrderCreatedEventHandler(ISender sender)
         {
-            _session = session;
             _sender = sender;
         }
-        public async Task Consume(ConsumeContext<NotificationEvent> context)
+        public async Task Consume(ConsumeContext<OrderEvent> context)
         {
-            var newNotification = context.Message.Adapt<CreateNotificationCommand>();
+            var newNotification = new CreateNotificationCommand("Order Placed", context.Message.OrderId.ToString(), context.Message.CustomerId);
             await _sender.Send(newNotification);
-
-
 
         }
     }
