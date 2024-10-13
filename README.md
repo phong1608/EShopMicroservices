@@ -39,7 +39,13 @@ There is a couple of microservices which implemented **e-commerce** modules over
 * Consuming **RabbitMQ** BasketCheckout event queue with using **MassTransit-RabbitMQ** Configuration
 * **SqlServer database** connection and containerization
 * Using **Entity Framework Core ORM** and auto migrate to SqlServer when application startup
-	
+#### Notification Microservices
+* ASP.NET Core Minimal APIs: Leveraging the latest features of .NET 7 for efficient and lightweight API development.
+* CQRS Implementation: Utilizing the MediatR library to handle commands and queries distinctly, improving the readability and scalability of the codebase.
+* RabbitMQ Integration: Consuming messages from the Ordering microservice to create notifications, using the MassTransit library for abstraction over RabbitMQ.
+* PostgreSQL Database: Utilizing Entity Framework Core ORM for seamless data access and management, with support for migrations to ensure database consistency.
+* Notification Creation: Generating notifications based on events received from the Ordering microservice, which can include order confirmations, status updates.
+* Carter for Minimal API Endpoints: Using Carter to define endpoints for managing notifications, including retrieval and deletion.
 #### Yarp API Gateway Microservice
 * Develop API Gateways with **Yarp Reverse Proxy** applying Gateway Routing Pattern
 * Yarp Reverse Proxy Configuration; Route, Cluster, Path, Transform, Destinations
